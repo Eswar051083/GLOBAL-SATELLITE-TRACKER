@@ -186,8 +186,21 @@
     </div>
 
     <!-- 4. Inject Core Three.js Engine Web Delivery Network Libraries -->
-    <script src="https://unpkg.com"></script>
-    <script src="https://jsdelivr.net"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://esm.sh",
+          "three/addons/": "https://esm.sh/examples/jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        window.THREE = THREE;
+        THREE.OrbitControls = OrbitControls;
+    </script>
 
     <script>
         // 5. Global Graphic Engine Architecture State Layouts
