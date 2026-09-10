@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Orbital Satellite Command Center</title>
+    <style>
+        /* 1. Global Page Workspace Reset Styles */
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #020408;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            color: #e2e8f0;
+        }
+
+        /* 3D Canvas Context Element Layout */
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* 2. Glass-morphism HUD Interface Layout Design */
+        .hud-panel {
+            position: absolute;
+            z-index: 10;
+            background: rgba(6, 11, 25, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+        }
+        #sidebar {
+            top: 20px;
+            left: 20px;
+            width: 350px;
+            max-height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        h1 {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            color: #00b4d8;
+            border-bottom: 2px solid rgba(0, 180, 216, 0.2);
+            padding-bottom: 12px;
+        }
+
+        /* Input Controls and Dropdown Form Blocks */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #94a3b8;
+        }
+        select {
+            background: #090d16;
+            border: 1px solid #273549;
+            color: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Telemetry Numbers Grid Configurations */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .telemetry-card {
+            background: rgba(9, 13, 22, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .telemetry-label {
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+        .telemetry-value {
+            font-size: 14px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #f1f5f9;
+            margin-top: 4px;
+        }
+
+        /* Glowing Action Control Buttons styling */
+        .btn {
+            background: linear-gradient(135deg, #005f73, #00b4d8);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+        .btn:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+        }
+
+        /* Terminal Logging Panel Configuration */
+        #log-panel {
+            background: rgba(2, 4, 8, 0.6);
+            border-radius: 8px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .log-entry { margin-bottom: 4px; color: #cbd5e1; }
+        .log-time { color: #38bdf8; margin-right: 6px; }
+    </style>
+</head>
+<body>
+
+    <!-- 3. Main Render Canvas Container Elements -->
+    <div id="canvas-container"></div>
+
+    <!-- The HUD Control Console Layout Frame -->
+    <div id="sidebar" class="hud-panel">
+        <h1>3D Earth Space Center</h1>
+        
+        <!-- Multi-Satellite Tracker Selector Menu -->
+        <div class="form-group">
+            <label for="satellite-selector">Tracking Targets Hub</label>
+            <select id="satellite-selector">
+                <option value="25544">ISS (Space Station)</option>
+                <option value="20580">Hubble Space Telescope</option>
+                <option value="27386">Envisat Satellite</option>
+                <option value="43013">NOAA 20 (Weather)</option>
+                <option value="40069">ORBCOMM OG2 (Comms)</option>
+                <option value="36508">GOES 15 (Climate)</option>
+            </select>
+        </div>
+
+        <!-- System Coordinates Panels Display -->
+        <div class="telemetry-grid">
+            <div class="telemetry-card">
+                <div class="telemetry-label">Latitude</div>
+                <div id="telemetry-lat" class="telemetry-value">--.----</div>
+            </div>
+            <div class="telemetry-card">
+                <div class="telemetry-label">Longitude</div>
+                <div id="telemetry-lon" class="telemetry-value">--.----</div>
+            </div>
+            <div class="telemetry-card">
+                <div class="telemetry-label">Altitude</div>
+                <div id="telemetry-alt" class="telemetry-value">---.- km</div>
+            </div>
+            <div class="telemetry-card">
+                <div class="telemetry-label">Velocity</div>
+                <div id="telemetry-vel" class="telemetry-value">-----.-- km/h</div>
+            </div>
+        </div>
+
+        <button id="btn-clear-path" class="btn">Clear Orbit Vector Trails</button>
+
+        <div id="log-panel">
+            <div class="log-entry"><span class="log-time">[3D_INIT]</span> Booting engine...</div>
+        </div>
+    </div>
+
+    <!-- 4. Inject Core Three.js Engine Web Delivery Network Libraries -->
+    <script src="https://unpkg.com"></script>
+    <script src="https://unpkg.com"></script>
+
+    <script>
+        // 5. Global Graphic Engine Architecture State Layouts
+        let scene, camera, renderer, controls;
+        let earthMesh, satelliteMesh;
+        let activeSatelliteId = "25544";
+        let pathLineObject = null;
+        let trailCoordinatesPoints = [];
+
+        function initialize3DSpaceEngine() {
+            const container = document.getElementById('canvas-container');
+            scene = new THREE.Scene();
+
+            // Setup camera perspective bounds configuration frames
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 15);
+
+            // Establish hardware graphic context renders matrices
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // Set up dragging camera orbits orbit view controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Ambient and direct illumination lighting systems fields
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+
+            // 6. Build the 3D Planet Sphere Globe geometry vectors
+            const earthGeometryRadius = new THREE.SphereGeometry(4, 64, 64);
+            
+            // Build the visual continent canvas coordinate line textures structures
+            const canvasTexture = document.createElement('canvas');
+            canvasTexture.width = 1024;
+            canvasTexture.height = 512;
+            const ctx = canvasTexture.getContext('2d');
+            ctx.fillStyle = '#0d1b2a';
+            ctx.fillRect(0, 0, 1024, 512);
+            ctx.strokeStyle = '#00b4d8';
+            ctx.lineWidth = 1;
+            for(let i = 0; i < 1024; i += 32) { ctx.strokeRect(i, 0, 32, 512); }
+
+            const earthTextureMap = new THREE.CanvasTexture(canvasTexture);
+            const earthMaterialConfiguration = new THREE.MeshStandardMaterial({
+                map: earthTextureMap,
+                roughness: 0.6
+            });
+
+            earthMesh = new THREE.Mesh(earthGeometryRadius, earthMaterialConfiguration);
+            scene.add(earthMesh);
+
+            // 7. Initialise glowing 3D space vehicle meshes points bounds
+            const satelliteGeometryBounds = new THREE.SphereGeometry(0.15, 16, 16);
+            const satelliteMaterialStyle = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
+            satelliteMesh = new THREE.Mesh(satelliteGeometryBounds, satelliteMaterialStyle);
+            scene.add(satelliteMesh);
+
+            window.addEventListener('resize', onWindowResizeResizeTask, false);
+            animateLoopCyclesEngine();
+        }
+        // 8. Convert Raw Geographic Data Pairs into 3D XYZ Space Vectors
+        function convertGeographicToXYZVectors(lat, lon, customAltitudeRadius) {
+            const latitudeRad = (90 - lat) * (Math.PI / 180);
+            const longitudeRad = (lon + 180) * (Math.PI / 180);
+            
+            // Scale object relative altitude metrics layout parameters
+            const finalScaledDistanceRadius = 4 + (customAltitudeRadius / 2000);
+
+            const coordinateX = -(finalScaledDistanceRadius * Math.sin(latitudeRad) * Math.sin(longitudeRad));
+            const coordinateY = (finalScaledDistanceRadius * Math.cos(latitudeRad));
+            const coordinateZ = (finalScaledDistanceRadius * Math.sin(latitudeRad) * Math.cos(longitudeRad));
+
+            return new THREE.Vector3(coordinateX, coordinateY, coordinateZ);
+        }
+
+        // 9. Asynchronous Satellite Database Synchronization Engine Loops
+        async function synchroniseSatelliteDataset() {
+            const endpoint = `https://wheretheiss.at{activeSatelliteId}`;
+            try {
+                const response = await fetch(endpoint);
+                const dataset = await response.json();
+
+                const lat = parseFloat(dataset.latitude);
+                const lon = parseFloat(dataset.longitude);
+                const alt = parseFloat(dataset.altitude);
+                const vel = parseFloat(dataset.velocity);
+
+                // Inject evaluated mathematical attributes to DOM interface variables
+                document.getElementById('telemetry-lat').innerText = lat.toFixed(4);
+                document.getElementById('telemetry-lon').innerText = lon.toFixed(4);
+                document.getElementById('telemetry-alt').innerText = `${alt.toFixed(1)} km`;
+                document.getElementById('telemetry-vel').innerText = `${vel.toFixed(1)} km/h`;
+
+                const activeXYZVector3 = convertGeographicToXYZVectors(lat, lon, alt);
+                satelliteMesh.position.copy(activeXYZVector3);
+
+                // Add evaluated tracking matrices variables nodes to array limits
+                trailCoordinatesPoints.push(activeXYZVector3);
+                
+                // Redraw tracing trail paths onto 3D layout bounds grids maps
+                if (pathLineObject) scene.remove(pathLineObject);
+                
+                const lineGeometryStructure = new THREE.BufferGeometry().setFromPoints(trailCoordinatesPoints);
+                const lineMaterialStyle = new THREE.LineBasicMaterial({ color: 0x00f5d4, linewidth: 2 });
+                pathLineObject = new THREE.Line(lineGeometryStructure, lineMaterialStyle);
+                scene.add(pathLineObject);
+
+                const loggerContainer = document.getElementById('log-panel');
+                loggerContainer.innerHTML = `<div class="log-entry"><span class="log-time">[SYNC]</span> Telemetry pipeline vector sync successful.</div>` + loggerContainer.innerHTML;
+
+            } catch (err) {
+                console.error("Fetch tracking network channel interface error details:", err);
+            }
+        }
+
+        function onWindowResizeResizeTask() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // 10. Frame Optimization Animation Loop System Routine
+        function animateLoopCyclesEngine() {
+            requestAnimationFrame(animateLoopCyclesEngine);
+
+            // Command Earth globe to slowly rotate around its grid polar matrix axes lines
+            if (earthMesh) {
+                earthMesh.rotation.y += 0.001;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Operational Interface Actions Listeners Hookups Config
+        document.getElementById('satellite-selector').addEventListener('change', function(e) {
+            activeSatelliteId = e.target.value;
+            trailCoordinatesPoints = [];
+            if (pathLineObject) scene.remove(pathLineObject);
+            synchroniseSatelliteDataset();
+        });
+
+        document.getElementById('btn-clear-path').addEventListener('click', function() {
+            trailCoordinatesPoints = [];
+            if (pathLineObject) scene.remove(pathLineObject);
+        });
+
+        // Trigger Ignition Core Processing Cycles System Loops Threads Schedules
+        initialize3DSpaceEngine();
+        synchroniseSatelliteDataset();
+        setInterval(synchroniseSatelliteDataset, 4000);
+    </script>
+</body>
+</html>
