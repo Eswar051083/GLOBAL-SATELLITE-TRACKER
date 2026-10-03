@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
             box-sizing: border-box;
             transition: all 0.3s ease;
         }
+
         body {
             margin: 0;
             padding: 0;
@@ -40,6 +42,7 @@
             padding: 22px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
         }
+
         #sidebar {
             top: 20px;
             left: 20px;
@@ -66,11 +69,13 @@
             flex-direction: column;
             gap: 6px;
         }
+
         label {
             font-size: 10px;
             text-transform: uppercase;
             color: #94a3b8;
         }
+
         select {
             background: #090d16;
             border: 1px solid #273549;
@@ -87,17 +92,20 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
         }
+
         .telemetry-card {
             background: rgba(9, 13, 22, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.03);
             padding: 12px;
             border-radius: 8px;
         }
+
         .telemetry-label {
             font-size: 9px;
             color: #64748b;
             text-transform: uppercase;
         }
+
         .telemetry-value {
             font-size: 14px;
             font-family: monospace;
@@ -117,9 +125,21 @@
             cursor: pointer;
             letter-spacing: 0.5px;
         }
+
         .btn:hover {
             filter: brightness(1.2);
             box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(0, 180, 216, 0.4);
+            margin-top: 4px;
+        }
+
+        .btn-info:hover {
+            border-color: #00f5d4;
+            box-shadow: 0 4px 15px rgba(0, 245, 212, 0.2);
         }
 
         /* Terminal Logging Panel Configuration */
@@ -132,10 +152,141 @@
             max-height: 120px;
             overflow-y: auto;
         }
-        .log-entry { margin-bottom: 4px; color: #cbd5e1; }
-        .log-time { color: #38bdf8; margin-right: 6px; }
+
+        .log-entry {
+            margin-bottom: 4px;
+            color: #cbd5e1;
+        }
+
+        .log-time {
+            color: #38bdf8;
+            margin-right: 6px;
+        }
+
+        /* Modal & Info Overlay Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(2, 4, 10, 0.75);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: rgba(10, 18, 38, 0.92);
+            border: 1px solid rgba(0, 245, 212, 0.4);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 520px;
+            padding: 26px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 180, 216, 0.2);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 22px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #00f5d4;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 18px;
+            color: #00f5d4;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .modal-badge {
+            background: rgba(0, 180, 216, 0.2);
+            border: 1px solid #00b4d8;
+            color: #38bdf8;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-row {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 12px;
+            border-radius: 8px;
+        }
+
+        .info-key {
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-val {
+            font-size: 12px;
+            color: #f1f5f9;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .info-desc {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
     </style>
 </head>
+
 <body>
 
     <!-- 3. Main Render Canvas Container Elements -->
@@ -144,17 +295,25 @@
     <!-- The HUD Control Console Layout Frame -->
     <div id="sidebar" class="hud-panel">
         <h1>3D Earth Space Center</h1>
-        
+
         <!-- Multi-Satellite Tracker Selector Menu -->
         <div class="form-group">
             <label for="satellite-selector">Tracking Targets Hub</label>
             <select id="satellite-selector">
                 <option value="25544">ISS (Space Station)</option>
+                <option value="48274">Tiangong (Space Station)</option>
                 <option value="20580">Hubble Space Telescope</option>
-                <option value="27386">Envisat Satellite</option>
-                <option value="43013">NOAA 20 (Weather)</option>
+                <option value="50463">James Webb Telescope (JWST)</option>
+                <option value="27386">Envisat (Earth Observation)</option>
+                <option value="43013">NOAA 20 (Polar Weather)</option>
+                <option value="49260">Landsat 9 (Land Imaging)</option>
+                <option value="46984">Sentinel-6 (Ocean Topography)</option>
+                <option value="25933">Terra (EOS Environmental)</option>
+                <option value="27424">Aqua (EOS Hydrology)</option>
+                <option value="44713">Starlink-1007 (Constellation)</option>
+                <option value="24208">GPS IIR-1 (Navigation)</option>
                 <option value="40069">ORBCOMM OG2 (Comms)</option>
-                <option value="36508">GOES 15 (Climate)</option>
+                <option value="36508">GOES 15 (Geostationary Climate)</option>
             </select>
         </div>
 
@@ -179,21 +338,54 @@
         </div>
 
         <button id="btn-clear-path" class="btn">Clear Orbit Vector Trails</button>
+        <button id="btn-show-info" class="btn btn-info">ℹ️ Satellite Mission Dossier</button>
 
         <div id="log-panel">
             <div class="log-entry"><span class="log-time">[3D_INIT]</span> Booting engine...</div>
         </div>
     </div>
 
+    <!-- Satellite Detailed Mission Information Modal -->
+    <div id="satellite-modal" class="modal-overlay">
+        <div class="modal-card">
+            <button id="modal-close-btn" class="modal-close">&times;</button>
+            <div class="modal-header">
+                <div>
+                    <div id="modal-badge" class="modal-badge">NORAD #25544</div>
+                    <h2 id="modal-name" class="modal-title">International Space Station</h2>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-row">
+                    <div class="info-key">Operator / Agency</div>
+                    <div id="modal-agency" class="info-val">NASA / Roscosmos / ESA / JAXA</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Orbit Class</div>
+                    <div id="modal-orbit" class="info-val">Low Earth Orbit (LEO)</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Launch Date</div>
+                    <div id="modal-launch" class="info-val">November 20, 1998</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Mass / Span</div>
+                    <div id="modal-specs" class="info-val">450,000 kg | 109m x 73m</div>
+                </div>
+            </div>
+
+            <div class="info-desc">
+                <strong style="color:#00f5d4;">Primary Mission & Objective:</strong>
+                <p id="modal-desc" style="margin: 6px 0 0 0;">Habitable space laboratory facilitating microgravity and space environment research, fundamental physics experiments, and Earth observation missions.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- 4. Inject Core Three.js Engine Web Delivery Network Libraries -->
-    
-<!-- Hyper-Modern Skypack Developer Network Pipeline -->
-    <script type="module">
-        import * as THREE from 'https://skypack.dev';
-        import { OrbitControls } from 'https://skypack.dev/examples/jsm/controls/OrbitControls.js';
-        window.THREE = THREE;
-        THREE.OrbitControls = OrbitControls;
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
     <script>
         // 5. Global Graphic Engine Architecture State Layouts
         let scene, camera, renderer, controls;
@@ -201,6 +393,301 @@
         let activeSatelliteId = "25544";
         let pathLineObject = null;
         let trailCoordinatesPoints = [];
+        let directionArrowObjects = [];
+
+        // Comprehensive Satellite Information Database
+        const SATELLITE_DATABASE = {
+            "25544": {
+                name: "International Space Station (ISS)",
+                norad: "25544",
+                agency: "NASA / Roscosmos / ESA / JAXA",
+                orbit: "Low Earth Orbit (LEO - 51.6 deg)",
+                launch: "November 20, 1998",
+                specs: "450,000 kg | 109m Solar Span",
+                desc: "The largest human-made structure in orbit, serving as a microgravity space environment research laboratory for scientific discovery and human spaceflight exploration."
+            },
+            "48274": {
+                name: "Tiangong Space Station (CSS)",
+                norad: "48274",
+                agency: "CMSA (China National Space Admin)",
+                orbit: "Low Earth Orbit (LEO - 41.5 deg)",
+                launch: "April 29, 2021",
+                specs: "100,000 kg | 37m Station Wingspan",
+                desc: "China's permanent orbital space station composed of Tianhe core module, Wentian, and Mengtian science modules conducting space life sciences and astrophysics."
+            },
+            "20580": {
+                name: "Hubble Space Telescope (HST)",
+                norad: "20580",
+                agency: "NASA / ESA",
+                orbit: "Low Earth Orbit (LEO - 28.5 deg)",
+                launch: "April 24, 1990",
+                specs: "11,110 kg | 2.4m Primary Mirror",
+                desc: "One of NASA's Great Observatories that revolutionized astronomy by revealing deep field galaxies, cosmic expansion, and exoplanet atmospheres."
+            },
+            "50463": {
+                name: "James Webb Space Telescope (JWST)",
+                norad: "50463",
+                agency: "NASA / ESA / CSA",
+                orbit: "Sun-Earth Lagrange Point L2",
+                launch: "December 25, 2021",
+                specs: "6,500 kg | 6.5m Beryllium Mirror",
+                desc: "Infrared space observatory designed to study the earliest stars and galaxies formed after the Big Bang, stellar nurseries, and distant exoplanet atmospheres."
+            },
+            "27386": {
+                name: "Envisat Satellite",
+                norad: "27386",
+                agency: "ESA (European Space Agency)",
+                orbit: "Sun-Synchronous Polar Orbit (98.5 deg)",
+                launch: "March 1, 2002",
+                specs: "8,211 kg | 26m Sensor Platform",
+                desc: "Largest civilian Earth observation satellite carrying 10 advanced optical and radar instruments to monitor ocean color, ice caps, and atmospheric composition."
+            },
+            "43013": {
+                name: "NOAA-20 (JPSS-1)",
+                norad: "43013",
+                agency: "NOAA / NASA",
+                orbit: "Sun-Synchronous Polar (98.7 deg)",
+                launch: "November 18, 2017",
+                specs: "2,296 kg | VIIRS / ATMS Payload",
+                desc: "Next-generation polar-orbiting weather satellite providing critical atmospheric soundings, global sea surface temperatures, and severe storm forecasting."
+            },
+            "49260": {
+                name: "Landsat 9",
+                norad: "49260",
+                agency: "NASA / USGS",
+                orbit: "Sun-Synchronous Polar (98.2 deg)",
+                launch: "September 27, 2021",
+                specs: "2,713 kg | OLI-2 & TIRS-2 Sensors",
+                desc: "Monitors land use changes, forest deforestation, agricultural crop health, and surface water resources as part of the 50-year Landsat imaging legacy."
+            },
+            "46984": {
+                name: "Sentinel-6 Michael Freilich",
+                norad: "46984",
+                agency: "ESA / NASA / EUMETSAT",
+                orbit: "Non-Sun-Synchronous (66.0 deg)",
+                launch: "November 21, 2020",
+                specs: "1,192 kg | Poseidon-4 Radar Altimeter",
+                desc: "Measures global sea level changes with millimeter precision to monitor climate change, ocean currents, and coastal storm surges."
+            },
+            "25933": {
+                name: "Terra (EOS AM-1)",
+                norad: "25933",
+                agency: "NASA / JAXA",
+                orbit: "Sun-Synchronous Polar (98.2 deg)",
+                launch: "December 18, 1999",
+                specs: "5,190 kg | MODIS / MISR Payload",
+                desc: "Flagship Earth Observing System satellite measuring atmosphere-land-ocean interactions, wildfire smoke plumes, and global vegetation cover."
+            },
+            "27424": {
+                name: "Aqua (EOS PM-1)",
+                norad: "27424",
+                agency: "NASA / JAXA / INPE",
+                orbit: "Sun-Synchronous Polar (98.2 deg)",
+                launch: "May 4, 2002",
+                specs: "3,117 kg | AIRS / AMSR-E Payload",
+                desc: "Collects comprehensive global data on Earth's water cycle, including evaporation, cloud cover, snowpack depth, and sea ice extent."
+            },
+            "44713": {
+                name: "Starlink-1007 Node",
+                norad: "44713",
+                agency: "SpaceX",
+                orbit: "Low Earth Orbit (LEO - 53.0 deg)",
+                launch: "November 11, 2019",
+                specs: "260 kg | Phased Array Ku/Ka Antennas",
+                desc: "Commercial broadband satellite constellation node providing low-latency high-speed satellite internet to remote regions around the globe."
+            },
+            "24208": {
+                name: "GPS IIR-1 (PRN 13)",
+                norad: "24208",
+                agency: "US Space Force",
+                orbit: "Medium Earth Orbit (MEO - 55.0 deg)",
+                launch: "July 23, 1997",
+                specs: "2,032 kg | Rubidium Atomic Clocks",
+                desc: "Global Positioning System navigation satellite providing ultra-precise positioning, timing, and velocity signals for global civil and defense networks."
+            },
+            "40069": {
+                name: "ORBCOMM OG2-M1",
+                norad: "40069",
+                agency: "ORBCOMM",
+                orbit: "Low Earth Orbit (LEO - 47.0 deg)",
+                launch: "July 14, 2014",
+                specs: "172 kg | VHF Machine-to-Machine Comms",
+                desc: "Second-generation narrow-band satellite network facilitating global machine-to-machine (M2M) messaging, cargo tracking, and maritime AIS monitoring."
+            },
+            "36508": {
+                name: "GOES-15 (GOES-West)",
+                norad: "36508",
+                agency: "NOAA / NASA",
+                orbit: "Geostationary Orbit (GEO - 0 deg)",
+                launch: "March 4, 2010",
+                specs: "3,238 kg | Imager & Sounder Suite",
+                desc: "Geostationary operational environmental satellite monitoring Pacific atmospheric rivers, hurricane tracks, solar flares, and space weather."
+            }
+        };
+
+        // Build detailed 3D Mini Satellite Model with body, solar wings, dish & velocity vector beam
+        function create3DMiniSatelliteObject() {
+            const group = new THREE.Group();
+
+            // Central Metallic Satellite Body Chassis
+            const bodyGeo = new THREE.BoxGeometry(0.38, 0.38, 0.52);
+            const bodyMat = new THREE.MeshStandardMaterial({
+                color: 0xffd700, // Gold foil thermal blanket finish
+                metalness: 0.9,
+                roughness: 0.25
+            });
+            const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+            group.add(bodyMesh);
+
+            // Radiator Panel Accents
+            const radGeo = new THREE.BoxGeometry(0.4, 0.34, 0.1);
+            const radMat = new THREE.MeshStandardMaterial({ color: 0x00b4d8, metalness: 0.7, roughness: 0.3 });
+            const radMesh = new THREE.Mesh(radGeo, radMat);
+            group.add(radMesh);
+
+            // Solar Array Wings (Left & Right) with Detailed Grid Frames
+            const solarMat = new THREE.MeshStandardMaterial({
+                color: 0x03045e,
+                emissive: 0x0077b6,
+                emissiveIntensity: 0.4,
+                metalness: 0.6,
+                roughness: 0.1
+            });
+
+            const wingLeftGeo = new THREE.BoxGeometry(1.3, 0.28, 0.04);
+            const wingLeft = new THREE.Mesh(wingLeftGeo, solarMat);
+            wingLeft.position.set(-0.9, 0, 0);
+            group.add(wingLeft);
+
+            const wingRightGeo = new THREE.BoxGeometry(1.3, 0.28, 0.04);
+            const wingRight = new THREE.Mesh(wingRightGeo, solarMat);
+            wingRight.position.set(0.9, 0, 0);
+            group.add(wingRight);
+
+            // Metallic Solar Panel Hinge Support Struts
+            const strutGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.4, 8);
+            const strutMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.1 });
+            const strutL = new THREE.Mesh(strutGeo, strutMat);
+            strutL.rotation.z = Math.PI / 2;
+            strutL.position.set(-0.35, 0, 0);
+            group.add(strutL);
+            const strutR = strutL.clone();
+            strutR.position.set(0.35, 0, 0);
+            group.add(strutR);
+
+            // Main Communications Dish Antenna
+            const dishGeo = new THREE.ConeGeometry(0.22, 0.16, 24);
+            const dishMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.95, roughness: 0.05 });
+            const dishMesh = new THREE.Mesh(dishGeo, dishMat);
+            dishMesh.rotation.x = Math.PI;
+            dishMesh.position.set(0, 0, 0.35);
+            group.add(dishMesh);
+
+            // Feed Horn Receiver Needle
+            const needleGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.2, 8);
+            const needleMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
+            const needleMesh = new THREE.Mesh(needleGeo, needleMat);
+            needleMesh.position.set(0, 0, 0.45);
+            group.add(needleMesh);
+
+            // Engine Thruster Nozzle at Rear
+            const engineGeo = new THREE.CylinderGeometry(0.08, 0.14, 0.15, 16);
+            const engineMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.4 });
+            const engineMesh = new THREE.Mesh(engineGeo, engineMat);
+            engineMesh.rotation.x = Math.PI / 2;
+            engineMesh.position.set(0, 0, -0.32);
+            group.add(engineMesh);
+
+            // Forward Velocity Direction Beam Pointer
+            const dirArrowGeo = new THREE.ConeGeometry(0.12, 0.4, 12);
+            const dirArrowMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4, wireframe: true });
+            const dirArrowMesh = new THREE.Mesh(dirArrowGeo, dirArrowMat);
+            dirArrowMesh.rotation.x = Math.PI / 2;
+            dirArrowMesh.position.set(0, 0, 0.7);
+            group.add(dirArrowMesh);
+
+            // Glowing Center Core Beacon
+            const beaconGeo = new THREE.SphereGeometry(0.1, 16, 16);
+            const beaconMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
+            const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
+            beaconMesh.name = "beacon";
+            group.add(beaconMesh);
+
+            return group;
+        }
+
+        // Create Procedural World Map Canvas Texture (Ensures continents & lat/lon grid are 100% visible)
+        function createWorldMapCanvasTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 2048;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            // Dark Deep Blue Ocean Base
+            ctx.fillStyle = '#061325';
+            ctx.fillRect(0, 0, 2048, 1024);
+
+            // Draw Latitude & Longitude Grid Lines
+            ctx.strokeStyle = 'rgba(0, 180, 216, 0.25)';
+            ctx.lineWidth = 2;
+
+            // Longitude grid lines
+            for (let x = 0; x <= 2048; x += 128) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, 1024);
+                ctx.stroke();
+            }
+            // Latitude grid lines
+            for (let y = 0; y <= 1024; y += 128) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(2048, y);
+                ctx.stroke();
+            }
+
+            // Equator Line Highlight
+            ctx.strokeStyle = 'rgba(0, 245, 212, 0.6)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, 512);
+            ctx.lineTo(2048, 512);
+            ctx.stroke();
+
+            // Draw Continents (Cyan / Blue Neon Outline World Map)
+            ctx.fillStyle = '#0d2b45';
+            ctx.strokeStyle = '#00b4d8';
+            ctx.lineWidth = 3;
+
+            // Simple Continent Polygons (Americas, Eurasia, Africa, Australia, Antarctica)
+            const continents = [
+                // North America
+                [[300, 250], [450, 200], [550, 300], [450, 450], [350, 480], [250, 400], [200, 300]],
+                // South America
+                [[500, 550], [600, 600], [580, 800], [500, 900], [450, 750]],
+                // Eurasia
+                [[850, 200], [1200, 180], [1650, 250], [1700, 450], [1400, 500], [1150, 450], [900, 350]],
+                // Africa
+                [[950, 480], [1150, 480], [1200, 650], [1100, 800], [1000, 750], [930, 580]],
+                // Australia
+                [[1550, 680], [1750, 680], [1780, 820], [1580, 820]],
+                // Antarctica
+                [[100, 950], [1950, 950], [1950, 1010], [100, 1010]]
+            ];
+
+            continents.forEach(poly => {
+                ctx.beginPath();
+                ctx.moveTo(poly[0][0], poly[0][1]);
+                for (let i = 1; i < poly.length; i++) {
+                    ctx.lineTo(poly[i][0], poly[i][1]);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            });
+
+            return new THREE.CanvasTexture(canvas);
+        }
 
         function initialize3DSpaceEngine() {
             const container = document.getElementById('canvas-container');
@@ -222,50 +709,47 @@
             controls.dampingFactor = 0.05;
 
             // Ambient and direct illumination lighting systems fields
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(ambientLight);
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
             directionalLight.position.set(5, 3, 5);
             scene.add(directionalLight);
 
-            // 6. Build the 3D Planet Sphere Globe geometry vectors
+            // Build 3D Planet Earth Sphere Globe
             const earthGeometryRadius = new THREE.SphereGeometry(4, 64, 64);
-            
-            // Build the visual continent canvas coordinate line textures structures
-            const canvasTexture = document.createElement('canvas');
-            canvasTexture.width = 1024;
-            canvasTexture.height = 512;
-            const ctx = canvasTexture.getContext('2d');
-            ctx.fillStyle = '#0d1b2a';
-            ctx.fillRect(0, 0, 1024, 512);
-            ctx.strokeStyle = '#00b4d8';
-            ctx.lineWidth = 1;
-            for(let i = 0; i < 1024; i += 32) { ctx.strokeRect(i, 0, 32, 512); }
-
-            const earthTextureMap = new THREE.CanvasTexture(canvasTexture);
             const earthMaterialConfiguration = new THREE.MeshStandardMaterial({
-                map: earthTextureMap,
-                roughness: 0.6
+                map: createWorldMapCanvasTexture(),
+                roughness: 0.5,
+                metalness: 0.1
             });
 
             earthMesh = new THREE.Mesh(earthGeometryRadius, earthMaterialConfiguration);
             scene.add(earthMesh);
 
-            // 7. Initialise glowing 3D space vehicle meshes points bounds
-            const satelliteGeometryBounds = new THREE.SphereGeometry(0.15, 16, 16);
-            const satelliteMaterialStyle = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
-            satelliteMesh = new THREE.Mesh(satelliteGeometryBounds, satelliteMaterialStyle);
+            // Try loading photorealistic Earth texture from CDN as overlay if available
+            const textureLoader = new THREE.TextureLoader();
+            textureLoader.load(
+                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_atmos_2048.jpg',
+                function (loadedTexture) {
+                    earthMaterialConfiguration.map = loadedTexture;
+                    earthMaterialConfiguration.needsUpdate = true;
+                }
+            );
+
+            // Build 3D Spacecraft Mini Satellite Model
+            satelliteMesh = create3DMiniSatelliteObject();
             scene.add(satelliteMesh);
 
             window.addEventListener('resize', onWindowResizeResizeTask, false);
             animateLoopCyclesEngine();
         }
-        // 8. Convert Raw Geographic Data Pairs into 3D XYZ Space Vectors
+
+        // Convert Raw Geographic Data Pairs into 3D XYZ Space Vectors
         function convertGeographicToXYZVectors(lat, lon, customAltitudeRadius) {
             const latitudeRad = (90 - lat) * (Math.PI / 180);
             const longitudeRad = (lon + 180) * (Math.PI / 180);
-            
+
             // Scale object relative altitude metrics layout parameters
             const finalScaledDistanceRadius = 4 + (customAltitudeRadius / 2000);
 
@@ -276,44 +760,113 @@
             return new THREE.Vector3(coordinateX, coordinateY, coordinateZ);
         }
 
-        // 9. Asynchronous Satellite Database Synchronization Engine Loops
+        // Simulated telemetry for satellites not on WhereTheISS or offline
+        function getSimulatedTelemetry(satId) {
+            const now = Date.now() / 1000;
+            let period = 92.6 * 60, inc = 51.6, alt = 422, vel = 27590;
+            if (satId === "48274") { period = 91.5 * 60; inc = 41.5; alt = 388; vel = 27620; }
+            else if (satId === "20580") { period = 95.4 * 60; inc = 28.5; alt = 535; vel = 27000; }
+            else if (satId === "50463") { period = 1440 * 60; inc = 15.0; alt = 1500000; vel = 3600; }
+            else if (satId === "27386") { period = 100.2 * 60; inc = 98.5; alt = 770; vel = 26800; }
+            else if (satId === "43013") { period = 101.4 * 60; inc = 98.7; alt = 824; vel = 26600; }
+            else if (satId === "49260") { period = 98.9 * 60; inc = 98.2; alt = 705; vel = 26900; }
+            else if (satId === "46984") { period = 112.4 * 60; inc = 66.0; alt = 1336; vel = 25900; }
+            else if (satId === "25933") { period = 98.8 * 60; inc = 98.2; alt = 705; vel = 26900; }
+            else if (satId === "27424") { period = 98.8 * 60; inc = 98.2; alt = 705; vel = 26900; }
+            else if (satId === "44713") { period = 95.0 * 60; inc = 53.0; alt = 550; vel = 27300; }
+            else if (satId === "24208") { period = 718.0 * 60; inc = 55.0; alt = 20200; vel = 13900; }
+            else if (satId === "40069") { period = 98.8 * 60; inc = 47.0; alt = 705; vel = 26900; }
+            else if (satId === "36508") { period = 1436 * 60; inc = 0.1; alt = 35786; vel = 11068; }
+
+            const angle = ((now % period) / period) * 2 * Math.PI;
+            const lat = Math.sin(angle) * inc;
+            const orbitProgress = (now % period) / period;
+            const earthRotationDeg = ((now % 86400) / 86400) * 360;
+            let lon = (orbitProgress * 360 - earthRotationDeg) % 360;
+            if (lon > 180) lon -= 360;
+            if (lon < -180) lon += 360;
+
+            return {
+                latitude: lat,
+                longitude: lon,
+                altitude: alt + Math.sin(now / 100) * 2,
+                velocity: vel + Math.cos(now / 100) * 15,
+                isSimulated: true
+            };
+        }
+
+        // Asynchronous Satellite Database Synchronization Engine Loops
         async function synchroniseSatelliteDataset() {
-            const endpoint = `https://wheretheiss.at{activeSatelliteId}`;
+            const endpoint = `https://api.wheretheiss.at/v1/satellites/${activeSatelliteId}`;
+            let dataset = null;
+            let dataSourceLabel = "LIVE API";
+
             try {
                 const response = await fetch(endpoint);
-                const dataset = await response.json();
-
-                const lat = parseFloat(dataset.latitude);
-                const lon = parseFloat(dataset.longitude);
-                const alt = parseFloat(dataset.altitude);
-                const vel = parseFloat(dataset.velocity);
-
-                // Inject evaluated mathematical attributes to DOM interface variables
-                document.getElementById('telemetry-lat').innerText = lat.toFixed(4);
-                document.getElementById('telemetry-lon').innerText = lon.toFixed(4);
-                document.getElementById('telemetry-alt').innerText = `${alt.toFixed(1)} km`;
-                document.getElementById('telemetry-vel').innerText = `${vel.toFixed(1)} km/h`;
-
-                const activeXYZVector3 = convertGeographicToXYZVectors(lat, lon, alt);
-                satelliteMesh.position.copy(activeXYZVector3);
-
-                // Add evaluated tracking matrices variables nodes to array limits
-                trailCoordinatesPoints.push(activeXYZVector3);
-                
-                // Redraw tracing trail paths onto 3D layout bounds grids maps
-                if (pathLineObject) scene.remove(pathLineObject);
-                
-                const lineGeometryStructure = new THREE.BufferGeometry().setFromPoints(trailCoordinatesPoints);
-                const lineMaterialStyle = new THREE.LineBasicMaterial({ color: 0x00f5d4, linewidth: 2 });
-                pathLineObject = new THREE.Line(lineGeometryStructure, lineMaterialStyle);
-                scene.add(pathLineObject);
-
-                const loggerContainer = document.getElementById('log-panel');
-                loggerContainer.innerHTML = `<div class="log-entry"><span class="log-time">[SYNC]</span> Telemetry pipeline vector sync successful.</div>` + loggerContainer.innerHTML;
-
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                dataset = {
+                    latitude: parseFloat(data.latitude),
+                    longitude: parseFloat(data.longitude),
+                    altitude: parseFloat(data.altitude),
+                    velocity: parseFloat(data.velocity),
+                    isSimulated: false
+                };
             } catch (err) {
-                console.error("Fetch tracking network channel interface error details:", err);
+                dataset = getSimulatedTelemetry(activeSatelliteId);
+                dataSourceLabel = "ORBITAL SIMULATOR";
             }
+
+            const lat = dataset.latitude;
+            const lon = dataset.longitude;
+            const alt = dataset.altitude;
+            const vel = dataset.velocity;
+
+            // Inject evaluated mathematical attributes to DOM interface variables
+            document.getElementById('telemetry-lat').innerText = lat.toFixed(4);
+            document.getElementById('telemetry-lon').innerText = lon.toFixed(4);
+            document.getElementById('telemetry-alt').innerText = `${alt.toFixed(1)} km`;
+            document.getElementById('telemetry-vel').innerText = `${vel.toFixed(1)} km/h`;
+
+            const activeXYZVector3 = convertGeographicToXYZVectors(lat, lon, alt);
+            satelliteMesh.position.copy(activeXYZVector3);
+
+            // Add evaluated tracking matrices variables nodes to array limits
+            trailCoordinatesPoints.push(activeXYZVector3);
+            if (trailCoordinatesPoints.length > 150) trailCoordinatesPoints.shift();
+
+            // Redraw tracing trail paths with Directional Arrow Indicators
+            if (pathLineObject) scene.remove(pathLineObject);
+            directionArrowObjects.forEach(arrow => scene.remove(arrow));
+            directionArrowObjects = [];
+
+            const lineGeometryStructure = new THREE.BufferGeometry().setFromPoints(trailCoordinatesPoints);
+            const lineMaterialStyle = new THREE.LineBasicMaterial({ color: 0x00f5d4 });
+            pathLineObject = new THREE.Line(lineGeometryStructure, lineMaterialStyle);
+            scene.add(pathLineObject);
+
+            // Render Directional Vector Arrows along the orbital trail to show flight heading
+            if (trailCoordinatesPoints.length > 2) {
+                const step = Math.max(1, Math.floor(trailCoordinatesPoints.length / 10));
+                for (let i = 0; i < trailCoordinatesPoints.length - 1; i += step) {
+                    const p1 = trailCoordinatesPoints[i];
+                    const p2 = trailCoordinatesPoints[i + 1];
+
+                    const dirVector = new THREE.Vector3().subVectors(p2, p1).normalize();
+                    const coneGeo = new THREE.ConeGeometry(0.1, 0.3, 8);
+                    const coneMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
+                    const arrowCone = new THREE.Mesh(coneGeo, coneMat);
+
+                    arrowCone.position.copy(p2);
+                    arrowCone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dirVector);
+                    scene.add(arrowCone);
+                    directionArrowObjects.push(arrowCone);
+                }
+            }
+
+            const loggerContainer = document.getElementById('log-panel');
+            const statusClass = dataset.isSimulated ? "style='color:#fbbf24;'" : "style='color:#34d178;'";
+            loggerContainer.innerHTML = `<div class="log-entry"><span class="log-time">[SYNC]</span> <span ${statusClass}>[${dataSourceLabel}]</span> Vector sync (${lat.toFixed(2)} deg, ${lon.toFixed(2)} deg)</div>` + loggerContainer.innerHTML;
         }
 
         function onWindowResizeResizeTask() {
@@ -322,7 +875,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // 10. Frame Optimization Animation Loop System Routine
+        // Frame Optimization Animation Loop System Routine
         function animateLoopCyclesEngine() {
             requestAnimationFrame(animateLoopCyclesEngine);
 
@@ -331,21 +884,80 @@
                 earthMesh.rotation.y += 0.001;
             }
 
+            // Slowly spin mini satellite model in space & pulse beacon core
+            if (satelliteMesh) {
+                satelliteMesh.rotation.y += 0.015;
+                satelliteMesh.rotation.z += 0.008;
+            }
+
             controls.update();
             renderer.render(scene, camera);
         }
 
         // Operational Interface Actions Listeners Hookups Config
-        document.getElementById('satellite-selector').addEventListener('change', function(e) {
+        document.getElementById('satellite-selector').addEventListener('change', function (e) {
             activeSatelliteId = e.target.value;
             trailCoordinatesPoints = [];
             if (pathLineObject) scene.remove(pathLineObject);
+            directionArrowObjects.forEach(arrow => scene.remove(arrow));
+            directionArrowObjects = [];
             synchroniseSatelliteDataset();
         });
 
-        document.getElementById('btn-clear-path').addEventListener('click', function() {
+        document.getElementById('btn-clear-path').addEventListener('click', function () {
             trailCoordinatesPoints = [];
             if (pathLineObject) scene.remove(pathLineObject);
+            directionArrowObjects.forEach(arrow => scene.remove(arrow));
+            directionArrowObjects = [];
+        });
+
+        // Open Satellite Mission Info Modal
+        function openSatelliteModal(satId) {
+            const data = SATELLITE_DATABASE[satId] || SATELLITE_DATABASE["25544"];
+            document.getElementById('modal-badge').innerText = `NORAD #${data.norad}`;
+            document.getElementById('modal-name').innerText = data.name;
+            document.getElementById('modal-agency').innerText = data.agency;
+            document.getElementById('modal-orbit').innerText = data.orbit;
+            document.getElementById('modal-launch').innerText = data.launch;
+            document.getElementById('modal-specs').innerText = data.specs;
+            document.getElementById('modal-desc').innerText = data.desc;
+
+            document.getElementById('satellite-modal').classList.add('active');
+        }
+
+        // Close Modal Handlers
+        document.getElementById('modal-close-btn').addEventListener('click', function () {
+            document.getElementById('satellite-modal').classList.remove('active');
+        });
+
+        document.getElementById('satellite-modal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        document.getElementById('btn-show-info').addEventListener('click', function () {
+            openSatelliteModal(activeSatelliteId);
+        });
+
+        // Raycaster 3D Canvas Click Handler for Satellite Mesh
+        const raycaster = new THREE.Raycaster();
+        const mouseVector = new THREE.Vector2();
+
+        window.addEventListener('click', function (event) {
+            // Ignore clicks on HUD sidebar or modal dialogs
+            if (event.target.closest('#sidebar') || event.target.closest('#satellite-modal')) return;
+
+            mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouseVector, camera);
+            if (satelliteMesh) {
+                const intersects = raycaster.intersectObject(satelliteMesh, true);
+                if (intersects.length > 0) {
+                    openSatelliteModal(activeSatelliteId);
+                }
+            }
         });
 
         // Trigger Ignition Core Processing Cycles System Loops Threads Schedules
@@ -354,4 +966,5 @@
         setInterval(synchroniseSatelliteDataset, 4000);
     </script>
 </body>
+
 </html>
