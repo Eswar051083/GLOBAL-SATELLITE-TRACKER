@@ -340,6 +340,10 @@
         <button id="btn-clear-path" class="btn">Clear Orbit Vector Trails</button>
         <button id="btn-show-info" class="btn btn-info">ℹ️ Satellite Mission Dossier</button>
 
+        <div id="orbit-status" style="font-size:9px;color:#67e8f9;font-family:monospace;padding:7px 9px;border:1px solid rgba(0,180,216,0.18);border-radius:7px;background:rgba(0,180,216,0.05);">
+            [ORBIT] Loading complete orbital path...
+        </div>
+
         <div id="log-panel">
             <div class="log-entry"><span class="log-time">[3D_INIT]</span> Booting engine...</div>
         </div>
@@ -394,6 +398,358 @@
         let pathLineObject = null;
         let trailCoordinatesPoints = [];
         let directionArrowObjects = [];
+
+        // ADDED FEATURE 1: complete orbital path shown immediately.
+        let predictedOrbitObject = null;
+
+        // ADDED FEATURE 2: satellite-specific real-spacecraft reference artwork.
+        let spacecraftImageSprite = null;
+        let spacecraftImageTexture = null;
+        let spacecraftImageRequestId = 0;
+
+        const SPACECRAFT_IMAGE_DATABASE = {
+            "25544": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/iss.png",
+                scale: 1.55,
+                credit: "NASA - International Space Station"
+            },
+            "48274": {
+                url: "https://upload.wikimedia.org/wikipedia/commons/2/20/Tiangong_Space_Station_Rendering_2022.07_no_background.png",
+                scale: 1.45,
+                credit: "Wikimedia Commons - Tiangong Space Station"
+            },
+            "20580": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/hubble.png",
+                scale: 1.25,
+                credit: "NASA - Hubble Space Telescope"
+            },
+            "50463": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/webb_1.png",
+                scale: 1.35,
+                credit: "NASA - James Webb Space Telescope"
+            },
+            "27386": {
+                url: "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/envisat_artist.JPG",
+                scale: 1.05,
+                credit: "ESA/USGS - ENVISAT"
+            },
+            "43013": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/jpss.png",
+                scale: 1.05,
+                credit: "NASA - JPSS/NOAA spacecraft"
+            },
+            "49260": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/landsat9.png",
+                scale: 1.20,
+                credit: "NASA - Landsat 9"
+            },
+            "46984": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/s6_SC_04032020_A.png",
+                scale: 1.20,
+                credit: "NASA/JPL-Caltech - Sentinel-6"
+            },
+            "25933": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/Terra.png",
+                scale: 1.20,
+                credit: "NASA - Terra"
+            },
+            "27424": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/Aqua.png",
+                scale: 1.15,
+                credit: "NASA - Aqua"
+            },
+            "44713": {
+                url: "https://upload.wikimedia.org/wikipedia/commons/f/fd/Starlink_02.webp",
+                scale: 0.90,
+                credit: "Wikimedia Commons - Starlink spacecraft"
+            },
+            "24208": {
+                url: "https://upload.wikimedia.org/wikipedia/commons/0/08/GPS-IIR.jpg",
+                scale: 0.90,
+                credit: "U.S. Government/Wikimedia Commons - GPS IIR"
+            },
+            "40069": {
+                url: "https://upload.wikimedia.org/wikipedia/commons/9/9c/ORBCOMM-2_%2823833499336%29.jpg",
+                scale: 0.75,
+                credit: "Wikimedia Commons - ORBCOMM"
+            },
+            "36508": {
+                url: "https://science.nasa.gov/wp-content/uploads/2023/05/goes_r.png",
+                scale: 1.15,
+                credit: "NASA - GOES spacecraft"
+            }
+        };
+
+        function getOrbitParameters(satId) {
+            const parameters = {
+                "25544": { period: 92.6 * 60, inc: 51.6, alt: 422 },
+                "48274": { period: 91.5 * 60, inc: 41.5, alt: 388 },
+                "20580": { period: 95.4 * 60, inc: 28.5, alt: 535 },
+                "50463": { period: 1440 * 60, inc: 15.0, alt: 1500000 },
+                "27386": { period: 100.2 * 60, inc: 98.5, alt: 770 },
+                "43013": { period: 101.4 * 60, inc: 98.7, alt: 824 },
+                "49260": { period: 98.9 * 60, inc: 98.2, alt: 705 },
+                "46984": { period: 112.4 * 60, inc: 66.0, alt: 1336 },
+                "25933": { period: 98.8 * 60, inc: 98.2, alt: 705 },
+                "27424": { period: 98.8 * 60, inc: 98.2, alt: 705 },
+                "44713": { period: 95.0 * 60, inc: 53.0, alt: 550 },
+                "24208": { period: 718.0 * 60, inc: 55.0, alt: 20200 },
+                "40069": { period: 98.8 * 60, inc: 47.0, alt: 705 },
+                "36508": { period: 1436 * 60, inc: 0.1, alt: 35786 }
+            };
+            return parameters[satId] || parameters["25544"];
+        }
+
+        function getVisualAltitudeForOrbit(satId, altitudeKm) {
+            if (satId === "50463") return 650;
+            if (altitudeKm > 10000) return 9000;
+            return altitudeKm;
+        }
+
+        // Build a complete orbit that is guaranteed to pass through the
+        // satellite's current position. This prevents the spacecraft icon
+        // from appearing beside (instead of on) the orbital path.
+        function buildCompletePredictedOrbit(satId, currentLat = null, currentLon = null, currentAlt = null) {
+            if (!scene) return;
+
+            if (predictedOrbitObject) {
+                scene.remove(predictedOrbitObject);
+                if (predictedOrbitObject.geometry) predictedOrbitObject.geometry.dispose();
+                if (predictedOrbitObject.material) predictedOrbitObject.material.dispose();
+                predictedOrbitObject = null;
+            }
+
+            // JWST is not an Earth-orbiting satellite. It operates around
+            // Sun-Earth L2, so an Earth-centered circular orbit would be misleading.
+            // We therefore show a straight deep-space guide from Earth outward.
+            if (satId === "50463") {
+                const direction = new THREE.Vector3(1, 0.18, 0.12).normalize();
+                const earthEdge = direction.clone().multiplyScalar(4.08);
+                const jwstDistance = 12.5;
+                const jwstPoint = direction.clone().multiplyScalar(jwstDistance);
+
+                const geometry = new THREE.BufferGeometry().setFromPoints([
+                    earthEdge,
+                    jwstPoint
+                ]);
+                const material = new THREE.LineBasicMaterial({
+                    color: 0xffc857,
+                    transparent: true,
+                    opacity: 0.8
+                });
+
+                predictedOrbitObject = new THREE.Line(geometry, material);
+                predictedOrbitObject.name = "jwst-l2-deep-space-guide";
+                scene.add(predictedOrbitObject);
+
+                const status = document.getElementById("orbit-status");
+                if (status) {
+                    status.innerText = "[TRAJECTORY] EARTH → SUN-EARTH L2 • JWST DEEP-SPACE GUIDE";
+                }
+                return;
+            }
+
+            const p = getOrbitParameters(satId);
+            const samples = 720;
+            const points = [];
+
+            // If live telemetry is available, force the orbit plane to contain
+            // the exact current satellite position. Otherwise use the simulator.
+            let currentPosition;
+            if (currentLat !== null && currentLon !== null && currentAlt !== null) {
+                currentPosition = convertGeographicToXYZVectors(
+                    currentLat,
+                    currentLon,
+                    currentAlt
+                );
+            } else {
+                const now = Date.now() / 1000;
+                const angle = ((now % p.period) / p.period) * Math.PI * 2;
+                const lat = Math.sin(angle) * p.inc;
+                const earthRotationDeg = ((now % 86400) / 86400) * 360;
+                let lon = (((now % p.period) / p.period) * 360 - earthRotationDeg) % 360;
+                if (lon > 180) lon -= 360;
+                if (lon < -180) lon += 360;
+                currentPosition = convertGeographicToXYZVectors(lat, lon, p.alt);
+            }
+
+            const radius = currentPosition.length();
+            const radialUnit = currentPosition.clone().normalize();
+
+            // Build an orbit-plane normal with the requested inclination.
+            // The plane is constrained to contain the current position.
+            const x = radialUnit.x;
+            const y = radialUnit.y;
+            const z = radialUnit.z;
+            const inclination = THREE.MathUtils.degToRad(p.inc);
+            const sinI = Math.sin(inclination);
+            const cosI = Math.cos(inclination);
+
+            let normal = null;
+            const horizontal = Math.sqrt(x * x + z * z);
+
+            if (horizontal > 1e-6 && Math.abs(sinI) > 1e-6) {
+                const phi = Math.atan2(z, x);
+                const target = -(cosI * y) / (sinI * horizontal);
+                const clamped = Math.max(-1, Math.min(1, target));
+                const delta = Math.acos(clamped);
+                const omega = phi + delta;
+
+                normal = new THREE.Vector3(
+                    sinI * Math.cos(omega),
+                    cosI,
+                    sinI * Math.sin(omega)
+                ).normalize();
+            }
+
+            // Robust fallback for nearly polar/currently poleward positions.
+            if (!normal || Math.abs(normal.dot(radialUnit)) > 0.0001) {
+                const reference = Math.abs(radialUnit.y) < 0.9
+                    ? new THREE.Vector3(0, 1, 0)
+                    : new THREE.Vector3(1, 0, 0);
+                normal = new THREE.Vector3().crossVectors(radialUnit, reference).normalize();
+            }
+
+            // u is exactly the current satellite direction, so angle 0 is the
+            // satellite's current position. v completes the orbit plane basis.
+            const u = radialUnit.clone();
+            const v = new THREE.Vector3().crossVectors(normal, u).normalize();
+
+            for (let i = 0; i <= samples; i++) {
+                const angle = (i / samples) * Math.PI * 2;
+                const point = u.clone().multiplyScalar(Math.cos(angle) * radius)
+                    .add(v.clone().multiplyScalar(Math.sin(angle) * radius));
+                points.push(point);
+            }
+
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({
+                color: 0x00f5d4,
+                transparent: true,
+                opacity: 0.55
+            });
+
+            predictedOrbitObject = new THREE.LineLoop(geometry, material);
+            predictedOrbitObject.name = "complete-orbital-path";
+            scene.add(predictedOrbitObject);
+
+            const status = document.getElementById("orbit-status");
+            if (status) {
+                status.innerText = `[ORBIT] COMPLETE PATH • ${SATELLITE_DATABASE[satId].name}`;
+            }
+        }
+
+        function disposeSatelliteVisual() {
+            if (spacecraftImageSprite) {
+                scene.remove(spacecraftImageSprite);
+                if (spacecraftImageSprite.material) spacecraftImageSprite.material.dispose();
+                spacecraftImageSprite = null;
+            }
+
+            if (spacecraftImageTexture) {
+                spacecraftImageTexture.dispose();
+                spacecraftImageTexture = null;
+            }
+        }
+
+        function loadSatelliteSpecificVisual(satId) {
+            const requestId = ++spacecraftImageRequestId;
+            disposeSatelliteVisual();
+
+            const asset = SPACECRAFT_IMAGE_DATABASE[satId];
+
+            if (!asset) {
+                satelliteMesh = create3DMiniSatelliteObject();
+                scene.add(satelliteMesh);
+                return;
+            }
+
+            const loader = new THREE.TextureLoader();
+            loader.setCrossOrigin("anonymous");
+
+            loader.load(
+                asset.url,
+                function(texture) {
+                    if (requestId !== spacecraftImageRequestId) {
+                        texture.dispose();
+                        return;
+                    }
+
+                    if (satelliteMesh) {
+                        scene.remove(satelliteMesh);
+                        satelliteMesh.traverse(function(object) {
+                            if (object.geometry) object.geometry.dispose();
+                            if (object.material) {
+                                if (Array.isArray(object.material)) {
+                                    object.material.forEach(material => material.dispose());
+                                } else {
+                                    object.material.dispose();
+                                }
+                            }
+                        });
+                        satelliteMesh = null;
+                    }
+
+                    spacecraftImageTexture = texture;
+
+                    const material = new THREE.SpriteMaterial({
+                        map: texture,
+                        transparent: true,
+                        depthWrite: false
+                    });
+
+                    spacecraftImageSprite = new THREE.Sprite(material);
+                    spacecraftImageSprite.name = "real-spacecraft-reference";
+                    spacecraftImageSprite.scale.set(
+                        asset.scale,
+                        asset.scale * (texture.image.height / texture.image.width),
+                        1
+                    );
+
+                    scene.add(spacecraftImageSprite);
+
+                    const status = document.getElementById("orbit-status");
+                    if (status) {
+                        status.innerText =
+                            `[ORBIT] COMPLETE PATH • [SPACECRAFT] ${SATELLITE_DATABASE[satId].name}`;
+                    }
+
+                    const loggerContainer = document.getElementById("log-panel");
+                    if (loggerContainer) {
+                        loggerContainer.innerHTML =
+                            `<div class="log-entry"><span class="log-time">[ICON]</span> ${asset.credit}</div>` +
+                            loggerContainer.innerHTML;
+                    }
+                },
+                undefined,
+                function() {
+                    if (requestId !== spacecraftImageRequestId) return;
+
+                    satelliteMesh = create3DMiniSatelliteObject();
+                    satelliteMesh.name = "procedural-spacecraft-fallback";
+                    scene.add(satelliteMesh);
+
+                    const status = document.getElementById("orbit-status");
+                    if (status) {
+                        status.innerText =
+                            `[ORBIT] COMPLETE PATH • [SPACECRAFT] 3D FALLBACK`;
+                    }
+                }
+            );
+        }
+
+        function updateSatelliteVisualPosition(position) {
+            let displayPosition = position;
+
+            if (activeSatelliteId === "50463") {
+                displayPosition = new THREE.Vector3(1, 0.18, 0.12).normalize().multiplyScalar(12.5);
+            }
+
+            if (satelliteMesh) satelliteMesh.position.copy(displayPosition);
+            if (spacecraftImageSprite) spacecraftImageSprite.position.copy(displayPosition);
+        }
+
+
 
         // Comprehensive Satellite Information Database
         const SATELLITE_DATABASE = {
@@ -737,9 +1093,13 @@
                 }
             );
 
-            // Build 3D Spacecraft Mini Satellite Model
+            // Build the original procedural model first as a reliable fallback.
             satelliteMesh = create3DMiniSatelliteObject();
             scene.add(satelliteMesh);
+
+            // Added: complete path + spacecraft-specific visual.
+            buildCompletePredictedOrbit(activeSatelliteId);
+            loadSatelliteSpecificVisual(activeSatelliteId);
 
             window.addEventListener('resize', onWindowResizeResizeTask, false);
             animateLoopCyclesEngine();
@@ -822,6 +1182,10 @@
             const alt = dataset.altitude;
             const vel = dataset.velocity;
 
+            // Rebuild the complete path from the same current position used by
+            // the spacecraft marker, so the marker sits directly on its orbit.
+            buildCompletePredictedOrbit(activeSatelliteId, lat, lon, alt);
+
             // Inject evaluated mathematical attributes to DOM interface variables
             document.getElementById('telemetry-lat').innerText = lat.toFixed(4);
             document.getElementById('telemetry-lon').innerText = lon.toFixed(4);
@@ -829,7 +1193,7 @@
             document.getElementById('telemetry-vel').innerText = `${vel.toFixed(1)} km/h`;
 
             const activeXYZVector3 = convertGeographicToXYZVectors(lat, lon, alt);
-            satelliteMesh.position.copy(activeXYZVector3);
+            updateSatelliteVisualPosition(activeXYZVector3);
 
             // Add evaluated tracking matrices variables nodes to array limits
             trailCoordinatesPoints.push(activeXYZVector3);
@@ -890,6 +1254,10 @@
                 satelliteMesh.rotation.z += 0.008;
             }
 
+            if (spacecraftImageSprite) {
+                spacecraftImageSprite.quaternion.copy(camera.quaternion);
+            }
+
             controls.update();
             renderer.render(scene, camera);
         }
@@ -901,6 +1269,9 @@
             if (pathLineObject) scene.remove(pathLineObject);
             directionArrowObjects.forEach(arrow => scene.remove(arrow));
             directionArrowObjects = [];
+
+            buildCompletePredictedOrbit(activeSatelliteId);
+            loadSatelliteSpecificVisual(activeSatelliteId);
             synchroniseSatelliteDataset();
         });
 
@@ -909,6 +1280,8 @@
             if (pathLineObject) scene.remove(pathLineObject);
             directionArrowObjects.forEach(arrow => scene.remove(arrow));
             directionArrowObjects = [];
+
+            buildCompletePredictedOrbit(activeSatelliteId);
         });
 
         // Open Satellite Mission Info Modal
@@ -962,6 +1335,8 @@
 
         // Trigger Ignition Core Processing Cycles System Loops Threads Schedules
         initialize3DSpaceEngine();
+        buildCompletePredictedOrbit(activeSatelliteId);
+        loadSatelliteSpecificVisual(activeSatelliteId);
         synchroniseSatelliteDataset();
         setInterval(synchroniseSatelliteDataset, 4000);
     </script>
