@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Orbital Satellite Command Center</title>
     <style>
-        /* 1. Global Page Workspace Reset Styles */
-        * {
+        
+    {
             box-sizing: border-box;
             transition: all 0.3s ease;
         }
@@ -21,7 +21,7 @@
             color: #e2e8f0;
         }
 
-        /* 3D Canvas Context Element Layout */
+       
         #canvas-container {
             width: 100vw;
             height: 100vh;
@@ -31,7 +31,7 @@
             z-index: 1;
         }
 
-        /* 2. Glass-morphism HUD Interface Layout Design */
+       
         .hud-panel {
             position: absolute;
             z-index: 10;
@@ -63,7 +63,7 @@
             padding-bottom: 12px;
         }
 
-        /* Input Controls and Dropdown Form Blocks */
+        
         .form-group {
             display: flex;
             flex-direction: column;
@@ -86,7 +86,7 @@
             cursor: pointer;
         }
 
-        /* Telemetry Numbers Grid Configurations */
+        
         .telemetry-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -114,7 +114,7 @@
             margin-top: 4px;
         }
 
-        /* Glowing Action Control Buttons styling */
+        
         .btn {
             background: linear-gradient(135deg, #005f73, #00b4d8);
             color: white;
@@ -142,7 +142,7 @@
             box-shadow: 0 4px 15px rgba(0, 245, 212, 0.2);
         }
 
-        /* Terminal Logging Panel Configuration */
+       
         #log-panel {
             background: rgba(2, 4, 8, 0.6);
             border-radius: 8px;
@@ -163,8 +163,7 @@
             margin-right: 6px;
         }
 
-        /* Modal & Info Overlay Styling */
-        .modal-overlay {
+                .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -289,15 +288,10 @@
 
 <body>
 
-    <!-- 3. Main Render Canvas Container Elements -->
     <div id="canvas-container"></div>
-
-    <!-- The HUD Control Console Layout Frame -->
     <div id="sidebar" class="hud-panel">
         <h1>3D Earth Space Center</h1>
-
-        <!-- Multi-Satellite Tracker Selector Menu -->
-        <div class="form-group">
+       <div class="form-group">
             <label for="satellite-selector">Tracking Targets Hub</label>
             <select id="satellite-selector">
                 <option value="25544">ISS (Space Station)</option>
@@ -317,8 +311,7 @@
             </select>
         </div>
 
-        <!-- System Coordinates Panels Display -->
-        <div class="telemetry-grid">
+       <div class="telemetry-grid">
             <div class="telemetry-card">
                 <div class="telemetry-label">Latitude</div>
                 <div id="telemetry-lat" class="telemetry-value">--.----</div>
@@ -349,8 +342,7 @@
         </div>
     </div>
 
-    <!-- Satellite Detailed Mission Information Modal -->
-    <div id="satellite-modal" class="modal-overlay">
+     <div id="satellite-modal" class="modal-overlay">
         <div class="modal-card">
             <button id="modal-close-btn" class="modal-close">&times;</button>
             <div class="modal-header">
@@ -378,31 +370,25 @@
                     <div id="modal-specs" class="info-val">450,000 kg | 109m x 73m</div>
                 </div>
             </div>
-
-            <div class="info-desc">
+  <div class="info-desc">
                 <strong style="color:#00f5d4;">Primary Mission & Objective:</strong>
                 <p id="modal-desc" style="margin: 6px 0 0 0;">Habitable space laboratory facilitating microgravity and space environment research, fundamental physics experiments, and Earth observation missions.</p>
             </div>
         </div>
     </div>
 
-    <!-- 4. Inject Core Three.js Engine Web Delivery Network Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
-        // 5. Global Graphic Engine Architecture State Layouts
+       
         let scene, camera, renderer, controls;
         let earthMesh, satelliteMesh;
         let activeSatelliteId = "25544";
         let pathLineObject = null;
         let trailCoordinatesPoints = [];
         let directionArrowObjects = [];
-
-        // ADDED FEATURE 1: complete orbital path shown immediately.
         let predictedOrbitObject = null;
-
-        // ADDED FEATURE 2: satellite-specific real-spacecraft reference artwork.
         let spacecraftImageSprite = null;
         let spacecraftImageTexture = null;
         let spacecraftImageRequestId = 0;
@@ -505,24 +491,17 @@
             if (altitudeKm > 10000) return 9000;
             return altitudeKm;
         }
-
-        // Build a complete orbit that is guaranteed to pass through the
-        // satellite's current position. This prevents the spacecraft icon
-        // from appearing beside (instead of on) the orbital path.
-        function buildCompletePredictedOrbit(satId, currentLat = null, currentLon = null, currentAlt = null) {
+ function buildCompletePredictedOrbit(satId, currentLat = null, currentLon = null, currentAlt = null) {
             if (!scene) return;
 
-            if (predictedOrbitObject) {
-                scene.remove(predictedOrbitObject);
-                if (predictedOrbitObject.geometry) predictedOrbitObject.geometry.dispose();
-                if (predictedOrbitObject.material) predictedOrbitObject.material.dispose();
-                predictedOrbitObject = null;
-            }
+     if (predictedOrbitObject) {
+         scene.remove(predictedOrbitObject);
+         if (predictedOrbitObject.geometry) predictedOrbitObject.geometry.dispose();
+         if (predictedOrbitObject.material) predictedOrbitObject.material.dispose();
+         predictedOrbitObject = null;
+     }
 
-            // JWST is not an Earth-orbiting satellite. It operates around
-            // Sun-Earth L2, so an Earth-centered circular orbit would be misleading.
-            // We therefore show a straight deep-space guide from Earth outward.
-            if (satId === "50463") {
+              if (satId === "50463") {
                 const direction = new THREE.Vector3(1, 0.18, 0.12).normalize();
                 const earthEdge = direction.clone().multiplyScalar(4.08);
                 const jwstDistance = 12.5;
@@ -553,9 +532,7 @@
             const samples = 720;
             const points = [];
 
-            // If live telemetry is available, force the orbit plane to contain
-            // the exact current satellite position. Otherwise use the simulator.
-            let currentPosition;
+                      let currentPosition;
             if (currentLat !== null && currentLon !== null && currentAlt !== null) {
                 currentPosition = convertGeographicToXYZVectors(
                     currentLat,
@@ -575,9 +552,6 @@
 
             const radius = currentPosition.length();
             const radialUnit = currentPosition.clone().normalize();
-
-            // Build an orbit-plane normal with the requested inclination.
-            // The plane is constrained to contain the current position.
             const x = radialUnit.x;
             const y = radialUnit.y;
             const z = radialUnit.z;
@@ -602,16 +576,13 @@
                 ).normalize();
             }
 
-            // Robust fallback for nearly polar/currently poleward positions.
-            if (!normal || Math.abs(normal.dot(radialUnit)) > 0.0001) {
+             if (!normal || Math.abs(normal.dot(radialUnit)) > 0.0001) {
                 const reference = Math.abs(radialUnit.y) < 0.9
                     ? new THREE.Vector3(0, 1, 0)
                     : new THREE.Vector3(1, 0, 0);
                 normal = new THREE.Vector3().crossVectors(radialUnit, reference).normalize();
             }
 
-            // u is exactly the current satellite direction, so angle 0 is the
-            // satellite's current position. v completes the orbit plane basis.
             const u = radialUnit.clone();
             const v = new THREE.Vector3().crossVectors(normal, u).normalize();
 
@@ -749,10 +720,7 @@
             if (spacecraftImageSprite) spacecraftImageSprite.position.copy(displayPosition);
         }
 
-
-
-        // Comprehensive Satellite Information Database
-        const SATELLITE_DATABASE = {
+ const SATELLITE_DATABASE = {
             "25544": {
                 name: "International Space Station (ISS)",
                 norad: "25544",
@@ -881,27 +849,20 @@
             }
         };
 
-        // Build detailed 3D Mini Satellite Model with body, solar wings, dish & velocity vector beam
         function create3DMiniSatelliteObject() {
             const group = new THREE.Group();
-
-            // Central Metallic Satellite Body Chassis
-            const bodyGeo = new THREE.BoxGeometry(0.38, 0.38, 0.52);
+           const bodyGeo = new THREE.BoxGeometry(0.38, 0.38, 0.52);
             const bodyMat = new THREE.MeshStandardMaterial({
-                color: 0xffd700, // Gold foil thermal blanket finish
+                color: 0xffd700, 
                 metalness: 0.9,
                 roughness: 0.25
             });
             const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
             group.add(bodyMesh);
-
-            // Radiator Panel Accents
             const radGeo = new THREE.BoxGeometry(0.4, 0.34, 0.1);
             const radMat = new THREE.MeshStandardMaterial({ color: 0x00b4d8, metalness: 0.7, roughness: 0.3 });
             const radMesh = new THREE.Mesh(radGeo, radMat);
             group.add(radMesh);
-
-            // Solar Array Wings (Left & Right) with Detailed Grid Frames
             const solarMat = new THREE.MeshStandardMaterial({
                 color: 0x03045e,
                 emissive: 0x0077b6,
@@ -914,15 +875,12 @@
             const wingLeft = new THREE.Mesh(wingLeftGeo, solarMat);
             wingLeft.position.set(-0.9, 0, 0);
             group.add(wingLeft);
-
             const wingRightGeo = new THREE.BoxGeometry(1.3, 0.28, 0.04);
             const wingRight = new THREE.Mesh(wingRightGeo, solarMat);
             wingRight.position.set(0.9, 0, 0);
             group.add(wingRight);
-
-            // Metallic Solar Panel Hinge Support Struts
             const strutGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.4, 8);
-            const strutMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.1 });
+       const strutMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.1 });
             const strutL = new THREE.Mesh(strutGeo, strutMat);
             strutL.rotation.z = Math.PI / 2;
             strutL.position.set(-0.35, 0, 0);
@@ -930,41 +888,31 @@
             const strutR = strutL.clone();
             strutR.position.set(0.35, 0, 0);
             group.add(strutR);
-
-            // Main Communications Dish Antenna
-            const dishGeo = new THREE.ConeGeometry(0.22, 0.16, 24);
-            const dishMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.95, roughness: 0.05 });
+    const dishGeo = new THREE.ConeGeometry(0.22, 0.16, 24);
+         const dishMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.95, roughness: 0.05 });
             const dishMesh = new THREE.Mesh(dishGeo, dishMat);
             dishMesh.rotation.x = Math.PI;
             dishMesh.position.set(0, 0, 0.35);
             group.add(dishMesh);
-
-            // Feed Horn Receiver Needle
-            const needleGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.2, 8);
-            const needleMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
+const needleGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.2, 8);
+  const needleMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
             const needleMesh = new THREE.Mesh(needleGeo, needleMat);
             needleMesh.position.set(0, 0, 0.45);
             group.add(needleMesh);
-
-            // Engine Thruster Nozzle at Rear
-            const engineGeo = new THREE.CylinderGeometry(0.08, 0.14, 0.15, 16);
+       const engineGeo = new THREE.CylinderGeometry(0.08, 0.14, 0.15, 16);
             const engineMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.4 });
             const engineMesh = new THREE.Mesh(engineGeo, engineMat);
             engineMesh.rotation.x = Math.PI / 2;
             engineMesh.position.set(0, 0, -0.32);
             group.add(engineMesh);
-
-            // Forward Velocity Direction Beam Pointer
-            const dirArrowGeo = new THREE.ConeGeometry(0.12, 0.4, 12);
+    const dirArrowGeo = new THREE.ConeGeometry(0.12, 0.4, 12);
             const dirArrowMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4, wireframe: true });
             const dirArrowMesh = new THREE.Mesh(dirArrowGeo, dirArrowMat);
             dirArrowMesh.rotation.x = Math.PI / 2;
             dirArrowMesh.position.set(0, 0, 0.7);
-            group.add(dirArrowMesh);
-
-            // Glowing Center Core Beacon
-            const beaconGeo = new THREE.SphereGeometry(0.1, 16, 16);
-            const beaconMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
+            group.add(dirArrowMesh); 
+         const beaconGeo = new THREE.SphereGeometry(0.1, 16, 16);
+          const beaconMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
             const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
             beaconMesh.name = "beacon";
             group.add(beaconMesh);
@@ -972,29 +920,24 @@
             return group;
         }
 
-        // Create Procedural World Map Canvas Texture (Ensures continents & lat/lon grid are 100% visible)
-        function createWorldMapCanvasTexture() {
+         function createWorldMapCanvasTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 2048;
             canvas.height = 1024;
             const ctx = canvas.getContext('2d');
+             ctx.fillStyle = '#061325';
+             ctx.fillRect(0, 0, 2048, 1024);
+             ctx.strokeStyle = 'rgba(0, 180, 216, 0.25)';
+             ctx.lineWidth = 2;
 
-            // Dark Deep Blue Ocean Base
-            ctx.fillStyle = '#061325';
-            ctx.fillRect(0, 0, 2048, 1024);
-
-            // Draw Latitude & Longitude Grid Lines
-            ctx.strokeStyle = 'rgba(0, 180, 216, 0.25)';
-            ctx.lineWidth = 2;
-
-            // Longitude grid lines
+        
             for (let x = 0; x <= 2048; x += 128) {
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x, 1024);
                 ctx.stroke();
             }
-            // Latitude grid lines
+           
             for (let y = 0; y <= 1024; y += 128) {
                 ctx.beginPath();
                 ctx.moveTo(0, y);
@@ -1002,20 +945,18 @@
                 ctx.stroke();
             }
 
-            // Equator Line Highlight
+           
             ctx.strokeStyle = 'rgba(0, 245, 212, 0.6)';
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.moveTo(0, 512);
             ctx.lineTo(2048, 512);
             ctx.stroke();
-
-            // Draw Continents (Cyan / Blue Neon Outline World Map)
             ctx.fillStyle = '#0d2b45';
             ctx.strokeStyle = '#00b4d8';
             ctx.lineWidth = 3;
 
-            // Simple Continent Polygons (Americas, Eurasia, Africa, Australia, Antarctica)
+           
             const continents = [
                 // North America
                 [[300, 250], [450, 200], [550, 300], [450, 450], [350, 480], [250, 400], [200, 300]],
@@ -1049,30 +990,26 @@
             const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
 
-            // Setup camera perspective bounds configuration frames
+           
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 0, 15);
 
-            // Establish hardware graphic context renders matrices
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            // Set up dragging camera orbits orbit view controls
+            
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
 
-            // Ambient and direct illumination lighting systems fields
+            
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(ambientLight);
-
             const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
             directionalLight.position.set(5, 3, 5);
             scene.add(directionalLight);
-
-            // Build 3D Planet Earth Sphere Globe
             const earthGeometryRadius = new THREE.SphereGeometry(4, 64, 64);
             const earthMaterialConfiguration = new THREE.MeshStandardMaterial({
                 map: createWorldMapCanvasTexture(),
@@ -1083,7 +1020,6 @@
             earthMesh = new THREE.Mesh(earthGeometryRadius, earthMaterialConfiguration);
             scene.add(earthMesh);
 
-            // Try loading photorealistic Earth texture from CDN as overlay if available
             const textureLoader = new THREE.TextureLoader();
             textureLoader.load(
                 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_atmos_2048.jpg',
@@ -1093,11 +1029,9 @@
                 }
             );
 
-            // Build the original procedural model first as a reliable fallback.
             satelliteMesh = create3DMiniSatelliteObject();
             scene.add(satelliteMesh);
 
-            // Added: complete path + spacecraft-specific visual.
             buildCompletePredictedOrbit(activeSatelliteId);
             loadSatelliteSpecificVisual(activeSatelliteId);
 
@@ -1105,14 +1039,10 @@
             animateLoopCyclesEngine();
         }
 
-        // Convert Raw Geographic Data Pairs into 3D XYZ Space Vectors
         function convertGeographicToXYZVectors(lat, lon, customAltitudeRadius) {
             const latitudeRad = (90 - lat) * (Math.PI / 180);
             const longitudeRad = (lon + 180) * (Math.PI / 180);
-
-            // Scale object relative altitude metrics layout parameters
             const finalScaledDistanceRadius = 4 + (customAltitudeRadius / 2000);
-
             const coordinateX = -(finalScaledDistanceRadius * Math.sin(latitudeRad) * Math.sin(longitudeRad));
             const coordinateY = (finalScaledDistanceRadius * Math.cos(latitudeRad));
             const coordinateZ = (finalScaledDistanceRadius * Math.sin(latitudeRad) * Math.cos(longitudeRad));
@@ -1120,7 +1050,6 @@
             return new THREE.Vector3(coordinateX, coordinateY, coordinateZ);
         }
 
-        // Simulated telemetry for satellites not on WhereTheISS or offline
         function getSimulatedTelemetry(satId) {
             const now = Date.now() / 1000;
             let period = 92.6 * 60, inc = 51.6, alt = 422, vel = 27590;
@@ -1155,7 +1084,6 @@
             };
         }
 
-        // Asynchronous Satellite Database Synchronization Engine Loops
         async function synchroniseSatelliteDataset() {
             const endpoint = `https://api.wheretheiss.at/v1/satellites/${activeSatelliteId}`;
             let dataset = null;
@@ -1182,11 +1110,8 @@
             const alt = dataset.altitude;
             const vel = dataset.velocity;
 
-            // Rebuild the complete path from the same current position used by
-            // the spacecraft marker, so the marker sits directly on its orbit.
             buildCompletePredictedOrbit(activeSatelliteId, lat, lon, alt);
 
-            // Inject evaluated mathematical attributes to DOM interface variables
             document.getElementById('telemetry-lat').innerText = lat.toFixed(4);
             document.getElementById('telemetry-lon').innerText = lon.toFixed(4);
             document.getElementById('telemetry-alt').innerText = `${alt.toFixed(1)} km`;
@@ -1195,11 +1120,8 @@
             const activeXYZVector3 = convertGeographicToXYZVectors(lat, lon, alt);
             updateSatelliteVisualPosition(activeXYZVector3);
 
-            // Add evaluated tracking matrices variables nodes to array limits
             trailCoordinatesPoints.push(activeXYZVector3);
             if (trailCoordinatesPoints.length > 150) trailCoordinatesPoints.shift();
-
-            // Redraw tracing trail paths with Directional Arrow Indicators
             if (pathLineObject) scene.remove(pathLineObject);
             directionArrowObjects.forEach(arrow => scene.remove(arrow));
             directionArrowObjects = [];
@@ -1209,13 +1131,11 @@
             pathLineObject = new THREE.Line(lineGeometryStructure, lineMaterialStyle);
             scene.add(pathLineObject);
 
-            // Render Directional Vector Arrows along the orbital trail to show flight heading
-            if (trailCoordinatesPoints.length > 2) {
+           if (trailCoordinatesPoints.length > 2) {
                 const step = Math.max(1, Math.floor(trailCoordinatesPoints.length / 10));
                 for (let i = 0; i < trailCoordinatesPoints.length - 1; i += step) {
                     const p1 = trailCoordinatesPoints[i];
                     const p2 = trailCoordinatesPoints[i + 1];
-
                     const dirVector = new THREE.Vector3().subVectors(p2, p1).normalize();
                     const coneGeo = new THREE.ConeGeometry(0.1, 0.3, 8);
                     const coneMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
@@ -1239,16 +1159,13 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // Frame Optimization Animation Loop System Routine
         function animateLoopCyclesEngine() {
             requestAnimationFrame(animateLoopCyclesEngine);
 
-            // Command Earth globe to slowly rotate around its grid polar matrix axes lines
             if (earthMesh) {
                 earthMesh.rotation.y += 0.001;
             }
 
-            // Slowly spin mini satellite model in space & pulse beacon core
             if (satelliteMesh) {
                 satelliteMesh.rotation.y += 0.015;
                 satelliteMesh.rotation.z += 0.008;
@@ -1262,8 +1179,7 @@
             renderer.render(scene, camera);
         }
 
-        // Operational Interface Actions Listeners Hookups Config
-        document.getElementById('satellite-selector').addEventListener('change', function (e) {
+            document.getElementById('satellite-selector').addEventListener('change', function (e) {
             activeSatelliteId = e.target.value;
             trailCoordinatesPoints = [];
             if (pathLineObject) scene.remove(pathLineObject);
@@ -1284,7 +1200,6 @@
             buildCompletePredictedOrbit(activeSatelliteId);
         });
 
-        // Open Satellite Mission Info Modal
         function openSatelliteModal(satId) {
             const data = SATELLITE_DATABASE[satId] || SATELLITE_DATABASE["25544"];
             document.getElementById('modal-badge').innerText = `NORAD #${data.norad}`;
@@ -1298,8 +1213,7 @@
             document.getElementById('satellite-modal').classList.add('active');
         }
 
-        // Close Modal Handlers
-        document.getElementById('modal-close-btn').addEventListener('click', function () {
+         document.getElementById('modal-close-btn').addEventListener('click', function () {
             document.getElementById('satellite-modal').classList.remove('active');
         });
 
@@ -1313,12 +1227,11 @@
             openSatelliteModal(activeSatelliteId);
         });
 
-        // Raycaster 3D Canvas Click Handler for Satellite Mesh
         const raycaster = new THREE.Raycaster();
         const mouseVector = new THREE.Vector2();
 
         window.addEventListener('click', function (event) {
-            // Ignore clicks on HUD sidebar or modal dialogs
+           
             if (event.target.closest('#sidebar') || event.target.closest('#satellite-modal')) return;
 
             mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -1333,7 +1246,6 @@
             }
         });
 
-        // Trigger Ignition Core Processing Cycles System Loops Threads Schedules
         initialize3DSpaceEngine();
         buildCompletePredictedOrbit(activeSatelliteId);
         loadSatelliteSpecificVisual(activeSatelliteId);
