@@ -1,6 +1,7 @@
-  * Project Title
+  * Project Title:-
   GLOBAL SATELLITE TRACKER
-  ** Description
+
+  ** Description:-
   It is a very interactive web thing which shows, the Earth, and the path of various satellites around our Earth, or in open space.
   It not only shows it's path but also tells it's velocity, latitude, longitude, etc.
   You can also know about the satellite's origin, weight, launch date, etc.
@@ -12,9 +13,11 @@
   If you want to know more details about the satellite which you selected, you should click "Satellite Mission Dossier".
   This web also allows you to zoom into the Earth, thus zooming into satellites, by which you can see a bit detailed 3-D satellite image.
   At the bottom there is a cool detailing about the satellite being synced with the real satellite location, you can actually scroll it, and see it completely.
-  *** Screenshot
+  
+  *** Screenshot:-
   <img width="880" height="1000" alt="image" src="https://github.com/user-attachments/assets/e5d04636-b9a2-4991-b130-7180c8ae73e0" />
-  **** Note 
+  
+  **** Note:-
   In future there will be major upgrades to this, if any bugs are there, they will be fixed soon.
   Don't miss out on upgrades! If you miss, don't regret later.
 
