@@ -4,7 +4,7 @@
   ** Description:-
   It is a very interactive web thing which shows, the Earth, and the path of various satellites around our Earth, or in open space.
   It not only shows it's path but also tells it's velocity, latitude, longitude, etc.
-  You can also know about the satellite's origin, weight, launch date, etc.
+  You can also know about the satellite's origin, weight, launch date, etc. It was made, coded using only HTML.
 
   After clicking the link and opening it, there will be a 3-D interactive image of Earth rotating. Around it a satellite circling it.
   Then by clicking down arrow which is present at the top in the given menu's, you can choose between various types of satellites.
